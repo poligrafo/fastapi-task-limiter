@@ -28,7 +28,7 @@ def setup_logging():
             },
         },
         "loggers": {
-            "app": {  # Логгер для "app"
+            "app": {
                 "level": "INFO",
                 "handlers": ["console", "file"],
                 "propagate": False,
