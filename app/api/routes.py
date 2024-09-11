@@ -1,14 +1,15 @@
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.schemas.response import TestResponse
+from app.schemas.response import ResponseModel
 from app.services.test_services import TestService, get_test_service
 
 logger = logging.getLogger("app")
 router = APIRouter()
 
-@router.get("/test", response_model=TestResponse)
-async def handler(test_service: TestService = Depends(get_test_service)) -> TestResponse:
+
+@router.get("/test", response_model=ResponseModel)
+async def handler(test_service: TestService = Depends(get_test_service)) -> ResponseModel:
     logger.info("Received request on /test")
     try:
         response = await test_service.handle()

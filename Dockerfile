@@ -1,28 +1,30 @@
-# Используем официальный образ Python 3.10
+# Используем Python 3.10
 FROM python:3.10-slim
 
-# Устанавливаем переменную окружения для предотвращения буферизации вывода
+# Устанавливаем переменные окружения для предотвращения буферизации вывода Python
 ENV PYTHONUNBUFFERED=1
 
-# Устанавливаем рабочую директорию в контейнере
+# Устанавливаем рабочую директорию для приложения
 WORKDIR /app
 
-# Копируем pyproject.toml и poetry.lock
+# Устанавливаем Poetry и отключаем создание виртуальных окружений
+RUN pip install --no-cache-dir poetry \
+    && poetry config virtualenvs.create false
+
+# Копируем файлы для установки зависимостей
 COPY pyproject.toml poetry.lock* /app/
 
-# Устанавливаем Poetry и зависимости проекта
-RUN pip install --no-cache-dir poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-dev --no-interaction --no-ansi
+# Устанавливаем зависимости без dev-зависимостей
+RUN poetry install --no-interaction --no-ansi
 
-# Копируем весь код приложения в контейнер
+# Копируем исходный код приложения
 COPY . /app/
 
-# Создаем директорию для логов
+# Создаем папку для логов
 RUN mkdir -p /app/logs
 
 # Открываем порт 8000 для приложения
 EXPOSE 8000
 
-# Запуск pytest и приложения uvicorn через Poetry
-CMD ["sh", "-c", "poetry run pytest && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+# Запускаем приложение с uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

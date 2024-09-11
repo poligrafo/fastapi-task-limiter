@@ -1,15 +1,9 @@
 # app/core/logging_config.py
 import logging
 import logging.config
-import os
-
 
 def setup_logging():
-    log_directory = '/app/logs'
-    if not os.path.exists(log_directory):
-        os.makedirs(log_directory)
-
-    LOGGING_CONFIG = {
+    logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -18,12 +12,6 @@ def setup_logging():
             },
         },
         "handlers": {
-            "file": {
-                "level": "INFO",
-                "class": "logging.FileHandler",
-                "filename": os.path.join(log_directory, "app.log"),
-                "formatter": "default",
-            },
             "console": {
                 "level": "INFO",
                 "class": "logging.StreamHandler",
@@ -31,21 +19,17 @@ def setup_logging():
             },
         },
         "loggers": {
-            "app": {
+            "fastapi_task_limiter": {  # Changed logger name to fastapi_task_limiter from uvicorn.error
                 "level": "INFO",
-                "handlers": ["file", "console"],
-            },
-            "uvicorn": {
-                "level": "INFO",
-                "handlers": ["file", "console"],
+                "handlers": ["console"],
                 "propagate": False,
             },
-            "fastapi": {
+            "uvicorn.access": {
                 "level": "INFO",
-                "handlers": ["file", "console"],
+                "handlers": ["console"],
                 "propagate": False,
             },
         },
     }
 
-    logging.config.dictConfig(LOGGING_CONFIG)
+    logging.config.dictConfig(logging_config)
